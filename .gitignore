@@ -1,0 +1,18 @@
+# Credenciais e configuração local
+firmware/**/config.h
+.env
+
+# Banco de dados
+*.db
+*.db-wal
+*.db-shm
+*.sqlite
+
+# Python
+__pycache__/
+.venv/
+.pytest_cache/
+
+# Compilação e ferramentas
+build/
+.playwright-mcp/
