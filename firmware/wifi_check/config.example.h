@@ -1,6 +1,7 @@
 // Copie para config.h e preencha com os dados da rede. O config.h não vai para o git.
 #pragma once
 
+// Em rede aberta, deixe a senha vazia: ""
 const char* WIFI_SSID = "network-name";
 const char* WIFI_PASSWORD = "network-password";
 
@@ -10,4 +11,4 @@ const char* MQTT_HOST = "broker.hivemq.com";
 const char* MQTT_BACKUP_HOST = "broker.emqx.io";
 const uint16_t MQTT_PORT = 1883;
 
-const char* INTERNET_CHECK_HOST = "example.com";
+const char* INTERNET_CHECK_URL = "http://connectivitycheck.gstatic.com/generate_204";

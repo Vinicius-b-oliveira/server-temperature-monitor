@@ -1,5 +1,6 @@
 // Teste de rede: conecta ao Wi-Fi e verifica se o broker MQTT responde na porta 1883.
 #include <WiFi.h>
+#include <HTTPClient.h>
 #include "config.h"
 
 const unsigned long WIFI_TIMEOUT_MS = 20000;
@@ -50,6 +51,17 @@ bool testTcp(const char* host, uint16_t port) {
   return ok;
 }
 
+// Resposta 204 indica internet livre; outra resposta indica portal de login da rede
+int checkInternet() {
+  HTTPClient http;
+  http.setTimeout(TCP_TIMEOUT_MS);
+  http.begin(INTERNET_CHECK_URL);
+  int code = http.GET();
+  http.end();
+  Serial.printf("HTTP %s -> %d\n", INTERNET_CHECK_URL, code);
+  return code;
+}
+
 void runTests() {
   testCount++;
   Serial.printf("\nTest %d, uptime %lu s\n", testCount, millis() / 1000);
@@ -65,11 +77,17 @@ void runTests() {
   bool primaryOk = testTcp(MQTT_HOST, MQTT_PORT);
   bool backupOk = testTcp(MQTT_BACKUP_HOST, MQTT_PORT);
 
-  // Se nenhum broker responde, a porta 80 separa "1883 bloqueada" de "sem internet"
   if (primaryOk || backupOk) {
     Serial.println("Result: MQTT port reachable");
-  } else if (testTcp(INTERNET_CHECK_HOST, 80)) {
+    return;
+  }
+
+  // Sem broker, o teste HTTP separa porta bloqueada, portal de login e falta de internet
+  int code = checkInternet();
+  if (code == 204) {
     Serial.println("Result: internet OK, port 1883 blocked");
+  } else if (code > 0) {
+    Serial.println("Result: captive portal, network needs login in a browser");
   } else {
     Serial.println("Result: no internet access");
   }

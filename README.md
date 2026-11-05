@@ -19,9 +19,9 @@ docs/
 
 ## Teste de Wi-Fi (`firmware/wifi_check`)
 
-Conecta ao Wi-Fi e mostra no monitor serial o IP, o sinal (RSSI) e se os brokers MQTT públicos respondem na porta 1883. Se nenhum broker responder, tenta a porta 80 para saber se a rede bloqueia só o MQTT ou se está sem internet.
+Conecta ao Wi-Fi e mostra no monitor serial o IP, o sinal (RSSI) e se os brokers MQTT públicos respondem na porta 1883. Se nenhum broker responder, faz um teste HTTP para saber se a rede bloqueia só o MQTT, se pede login numa página do navegador (portal cativo) ou se está sem internet.
 
-1. Copie `config.example.h` para `config.h`, na mesma pasta, e preencha o nome e a senha da rede. O `config.h` não vai para o git.
+1. Copie `config.example.h` para `config.h`, na mesma pasta, e preencha o nome e a senha da rede. Em rede aberta, deixe a senha vazia (`""`). O `config.h` não vai para o git.
 2. Abra `wifi_check.ino` no Arduino IDE 2.x, com a placa "ESP32 Dev Module" (pacote de placas `esp32` da Espressif).
 3. Grave no ESP32 e abra o monitor serial em 115200. O teste se repete a cada 10 s.
 
