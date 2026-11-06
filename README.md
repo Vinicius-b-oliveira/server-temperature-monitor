@@ -17,6 +17,8 @@ server/
   requirements.txt
 docs/
   diagrams/        diagramas das etapas (SVG e PNG)
+  stage1_proposal.pdf          Etapa 1 entregue: proposta e planejamento
+  stage2_technical_design.pdf  Etapa 2 entregue: projeto técnico
 ```
 
 ## Teste de hardware (`firmware/hardware_check`)
