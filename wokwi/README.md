@@ -17,6 +17,6 @@ O `sketch.ino` do Wokwi tem o conteúdo de `firmware/hardware_check/hardware_che
 | Ponto | Wokwi | Bancada |
 |---|---|---|
 | DHT | DHT22, porque o simulador não tem DHT11 | DHT11. Trocar `DHT_TYPE` no sketch |
-| LDR | Módulo com o resistor de 10 kΩ embutido | LDR e resistor de 10 kΩ em divisor, com o limiar calibrado na hora |
+| LDR | Módulo com o resistor de 10 kΩ embutido | LDR e resistor de 10 kΩ em divisor. O limiar da tampa aberta é calibrado na hora, no firmware principal |
 | Ventoinha | LED azul com resistor de 300 Ω | Transistor, diodo e ventoinha, testados separados antes |
 | Placa | ESP32 DevKit C V4 (38 pinos) | Provavelmente ESP32 DevKit V1 (30 pinos): mesmos GPIOs, em outras posições |

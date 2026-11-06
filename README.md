@@ -4,7 +4,7 @@ Projeto final da disciplina de Internet das Coisas (Engenharia de Software, Cat�
 
 Um ESP32 mede a temperatura de um gabinete que faz o papel de rack de servidor e classifica a situação em normal, atenção ou crítico. Conforme o estado, ele liga a ventoinha, muda a cor do LED RGB e toca o buzzer. A telemetria vai por MQTT para um servidor em Python, que guarda as leituras em SQLite, mostra um painel web e envia comandos de volta ao ESP32.
 
-O projeto está em andamento. Por enquanto o repositório tem o teste de hardware e o teste de rede do ESP32, o circuito no Wokwi e a base do servidor. O firmware principal, o servidor e o painel entram nas próximas etapas.
+O projeto está em andamento. Por enquanto o repositório tem o teste de hardware e o teste de rede do ESP32, o circuito no Wokwi e a lista de dependências do servidor. O firmware principal, o servidor e o painel entram nas próximas etapas.
 
 ## Estrutura
 

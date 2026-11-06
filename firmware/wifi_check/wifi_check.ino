@@ -50,7 +50,7 @@ bool testTcp(const char* host, uint16_t port) {
   return ok;
 }
 
-// 204: internet livre. Outro código: portal de login
+// 204: internet livre. Outro código HTTP: portal de login. Negativo: sem internet
 int checkInternet() {
   HTTPClient http;
   http.setTimeout(TCP_TIMEOUT_MS);
