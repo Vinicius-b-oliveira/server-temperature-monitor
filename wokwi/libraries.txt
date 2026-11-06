@@ -1,0 +1,7 @@
+# Wokwi Library List
+# See https://docs.wokwi.com/guides/libraries
+
+OneWire@2.3.8
+DallasTemperature@4.0.6
+DHT sensor library@1.4.7
+Adafruit Unified Sensor@1.1.15

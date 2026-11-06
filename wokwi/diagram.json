@@ -1,0 +1,432 @@
+{
+  "version": 1,
+  "author": "Grupo 2",
+  "editor": "wokwi",
+  "parts": [
+    {
+      "type": "wokwi-breadboard-half",
+      "id": "bb1",
+      "top": 0.0,
+      "left": 0,
+      "attrs": {}
+    },
+    {
+      "type": "wokwi-breadboard-half",
+      "id": "bb2",
+      "top": 201.75,
+      "left": 0,
+      "attrs": {}
+    },
+    {
+      "type": "board-esp32-devkit-c-v4",
+      "id": "esp",
+      "top": 97.49,
+      "left": 173.7,
+      "rotate": 90,
+      "attrs": {}
+    },
+    {
+      "type": "wokwi-photoresistor-sensor",
+      "id": "ldr",
+      "top": -140.5,
+      "left": 194.0,
+      "rotate": 90,
+      "attrs": {}
+    },
+    {
+      "type": "wokwi-rgb-led",
+      "id": "rgb",
+      "top": 7.0,
+      "left": 143.05,
+      "attrs": {
+        "common": "cathode"
+      }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "r_red",
+      "top": 112.8,
+      "left": 198.25,
+      "rotate": 90,
+      "attrs": {
+        "value": "300"
+      }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "r_green",
+      "top": 112.8,
+      "left": 188.65,
+      "rotate": 90,
+      "attrs": {
+        "value": "300"
+      }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "r_blue",
+      "top": 112.8,
+      "left": 207.85,
+      "rotate": 90,
+      "attrs": {
+        "value": "300"
+      }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn",
+      "top": 79.7,
+      "left": 48.7,
+      "rotate": 90,
+      "attrs": {
+        "color": "green"
+      }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "r_fan",
+      "top": 295.35,
+      "left": 207.85,
+      "rotate": 90,
+      "attrs": {
+        "value": "300"
+      }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "r_dht",
+      "top": 343.1,
+      "left": 54.2,
+      "attrs": {
+        "value": "10000"
+      }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "r_ds",
+      "top": 343.1,
+      "left": 140.6,
+      "attrs": {
+        "value": "4700"
+      }
+    },
+    {
+      "type": "wokwi-dht22",
+      "id": "dht",
+      "top": 437.9,
+      "left": 22.3,
+      "rotate": 180,
+      "attrs": {}
+    },
+    {
+      "type": "wokwi-ds18b20",
+      "id": "ds",
+      "top": 438.13,
+      "left": 124.32,
+      "rotate": 180,
+      "attrs": {}
+    },
+    {
+      "type": "wokwi-buzzer",
+      "id": "bz",
+      "top": 440,
+      "left": 189.6,
+      "rotate": 180,
+      "attrs": {
+        "volume": "0.1"
+      }
+    },
+    {
+      "type": "wokwi-led",
+      "id": "fan",
+      "top": 432,
+      "left": 270.2,
+      "rotate": 180,
+      "attrs": {
+        "color": "blue"
+      }
+    }
+  ],
+  "connections": [
+    [
+      "esp:TX",
+      "$serialMonitor:RX",
+      "",
+      []
+    ],
+    [
+      "esp:RX",
+      "$serialMonitor:TX",
+      "",
+      []
+    ],
+    [
+      "bb1:30b.f",
+      "bb1:tp.25",
+      "red",
+      [
+        "v-88.2",
+        "h-1.6",
+        "v-17.7"
+      ]
+    ],
+    [
+      "bb1:17b.g",
+      "bb1:tn.9",
+      "black",
+      [
+        "h-59.2",
+        "v-105.5"
+      ]
+    ],
+    [
+      "ldr:AO",
+      "bb1:26b.f",
+      "gold",
+      [
+        "v143.2"
+      ]
+    ],
+    [
+      "ldr:GND",
+      "bb1:tn.23",
+      "black",
+      [
+        "v15",
+        "h-1.9",
+        "v32.3"
+      ]
+    ],
+    [
+      "ldr:VCC",
+      "bb1:tp.24",
+      "red",
+      [
+        "v15",
+        "h-2.3",
+        "v22.3"
+      ]
+    ],
+    [
+      "bb1:23t.b",
+      "bb1:17t.b",
+      "blue",
+      [
+        "h-57.6"
+      ]
+    ],
+    [
+      "bb1:21t.c",
+      "bb1:16t.c",
+      "limegreen",
+      [
+        "h-48"
+      ]
+    ],
+    [
+      "bb1:22t.d",
+      "bb1:14t.d",
+      "magenta",
+      [
+        "h-76.8"
+      ]
+    ],
+    [
+      "bb1:15t.e",
+      "bb1:17b.f",
+      "black",
+      [
+        "v14.4",
+        "h19.2",
+        "v14.4"
+      ]
+    ],
+    [
+      "bb1:6t.a",
+      "bb1:tn.5",
+      "black",
+      [
+        "v-15",
+        "h-1.6",
+        "v-13.7"
+      ]
+    ],
+    [
+      "bb1:8b.i",
+      "bb1:20b.i",
+      "purple",
+      [
+        "h115.2"
+      ]
+    ],
+    [
+      "bb1:tp.1",
+      "bb2:bp.1",
+      "red",
+      [
+        "h-54",
+        "v375.75",
+        "h54"
+      ]
+    ],
+    [
+      "bb2:18t.e",
+      "bb2:4b.f",
+      "cyan",
+      [
+        "v9",
+        "h-134.4",
+        "v19.8"
+      ]
+    ],
+    [
+      "bb2:19t.e",
+      "bb2:13b.f",
+      "green",
+      [
+        "v19",
+        "h-57.6",
+        "v9.8"
+      ]
+    ],
+    [
+      "bb2:22t.e",
+      "bb2:22b.f",
+      "orange",
+      [
+        "v28.8"
+      ]
+    ],
+    [
+      "bb2:23b.h",
+      "bb2:28b.h",
+      "violet",
+      [
+        "h48"
+      ]
+    ],
+    [
+      "bb2:30t.e",
+      "bb2:bn.25",
+      "black",
+      [
+        "v79.2",
+        "h-1.6",
+        "v27.7"
+      ]
+    ],
+    [
+      "bb2:10b.j",
+      "bb2:bp.8",
+      "red",
+      [
+        "v12",
+        "h-1.6",
+        "v17.7"
+      ]
+    ],
+    [
+      "bb2:19b.j",
+      "bb2:bp.16",
+      "red",
+      [
+        "v12",
+        "h8",
+        "v17.7"
+      ]
+    ],
+    [
+      "dht:SDA",
+      "bb2:4b.j",
+      "cyan",
+      [
+        "v-81.65"
+      ]
+    ],
+    [
+      "dht:VCC",
+      "bb2:bp.4",
+      "red",
+      [
+        "v-30",
+        "h-1.5",
+        "v-21.95"
+      ]
+    ],
+    [
+      "dht:GND",
+      "bb2:bn.1",
+      "black",
+      [
+        "v-30",
+        "h-1.5",
+        "v-11.95"
+      ]
+    ],
+    [
+      "ds:DQ",
+      "bb2:13b.j",
+      "green",
+      [
+        "v-81.65"
+      ]
+    ],
+    [
+      "ds:VCC",
+      "bb2:bp.10",
+      "red",
+      [
+        "v-30",
+        "h-1.6",
+        "v-21.95"
+      ]
+    ],
+    [
+      "ds:GND",
+      "bb2:bn.11",
+      "black",
+      [
+        "v-30",
+        "h-1.6",
+        "v-11.95"
+      ]
+    ],
+    [
+      "bz:2",
+      "bb2:22b.j",
+      "orange",
+      [
+        "v-81.65"
+      ]
+    ],
+    [
+      "bz:1",
+      "bb2:bn.19",
+      "black",
+      [
+        "v-30",
+        "h-2",
+        "v-11.95"
+      ]
+    ],
+    [
+      "fan:A",
+      "bb2:28b.j",
+      "violet",
+      [
+        "v-81.65"
+      ]
+    ],
+    [
+      "fan:C",
+      "bb2:bn.24",
+      "black",
+      [
+        "v-30",
+        "h-2",
+        "v-11.95"
+      ]
+    ]
+  ],
+  "dependencies": {}
+}
