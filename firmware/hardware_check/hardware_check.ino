@@ -1,10 +1,10 @@
-// Teste de hardware sem rede: lê cada sensor e aciona cada atuador.
+// Teste de hardware: sensores e saídas, sem rede
 #include <OneWire.h>
 #include <DallasTemperature.h>
 #include <DHT.h>
 #include "pins.h"
 
-// DHT22 no Wokwi, DHT11 na bancada
+// Trocar para DHT11 na bancada (o Wokwi só tem o DHT22)
 const uint8_t DHT_TYPE = DHT22;
 
 const unsigned long STATUS_INTERVAL_MS = 1000;
@@ -31,7 +31,7 @@ unsigned long lastStatusMs = 0;
 unsigned long lastDhtMs = 0;
 unsigned long lastColorMs = 0;
 
-// Amarelo é vermelho com verde. O LED da ventoinha acende junto com o vermelho
+// LED RGB e ventoinha
 void showColor(int index) {
   const char* name = COLOR_NAMES[index];
   bool red = strcmp(name, "red") == 0 || strcmp(name, "yellow") == 0;
@@ -43,11 +43,11 @@ void showColor(int index) {
   digitalWrite(PIN_FAN, strcmp(name, "red") == 0 ? HIGH : LOW);
 }
 
-// Lê o resultado da conversão anterior e já pede a próxima, sem esperar
+// DS18B20
 float readDs18b20() {
   float value = ds18b20.getTempCByIndex(0);
   ds18b20.requestTemperatures();
-  // -127 é sensor sem resposta e 85 é o valor de antes da primeira conversão
+  // -127: sem resposta. 85: antes da primeira conversão
   if (value == DEVICE_DISCONNECTED_C || value == 85.0) {
     return NAN;
   }
@@ -74,6 +74,7 @@ void setup() {
 void loop() {
   unsigned long now = millis();
 
+  // Botão e buzzer
   bool buttonPressed = digitalRead(PIN_BUTTON) == LOW;
   if (buttonPressed && !buttonWasPressed) {
     tone(PIN_BUZZER, BEEP_HZ);
@@ -82,24 +83,27 @@ void loop() {
   }
   buttonWasPressed = buttonPressed;
 
-  // Desliga o bipe depois de BEEP_MS sem travar o loop
+  // tone() com duração não desliga o buzzer no Wokwi
   if (beeping && now - beepStartMs >= BEEP_MS) {
     noTone(PIN_BUZZER);
     beeping = false;
   }
 
+  // Cores
   if (now - lastColorMs >= COLOR_INTERVAL_MS) {
     lastColorMs = now;
     colorIndex = (colorIndex + 1) % COLOR_COUNT;
     showColor(colorIndex);
   }
 
+  // DHT
   if (now - lastDhtMs >= DHT_INTERVAL_MS) {
     lastDhtMs = now;
     dhtTempC = dht.readTemperature();
     humidity = dht.readHumidity();
   }
 
+  // Serial
   if (now - lastStatusMs >= STATUS_INTERVAL_MS) {
     lastStatusMs = now;
     tempC = readDs18b20();

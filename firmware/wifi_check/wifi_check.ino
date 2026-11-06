@@ -34,7 +34,6 @@ bool connectWifi() {
   return true;
 }
 
-// Resolve o nome e tenta abrir uma conexão TCP
 bool testTcp(const char* host, uint16_t port) {
   IPAddress ip;
   if (!WiFi.hostByName(host, ip)) {
@@ -51,7 +50,7 @@ bool testTcp(const char* host, uint16_t port) {
   return ok;
 }
 
-// Resposta 204 indica internet livre; outra resposta indica portal de login da rede
+// 204: internet livre. Outro código: portal de login
 int checkInternet() {
   HTTPClient http;
   http.setTimeout(TCP_TIMEOUT_MS);
@@ -82,7 +81,7 @@ void runTests() {
     return;
   }
 
-  // Sem broker, o teste HTTP separa porta bloqueada, portal de login e falta de internet
+  // Sem broker: descobre se é porta bloqueada, portal ou sem internet
   int code = checkInternet();
   if (code == 204) {
     Serial.println("Result: internet OK, port 1883 blocked");
