@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Monitor do rack 01</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body data-state="none">
+  <svg class="icons" aria-hidden="true">
+    <symbol id="icon-normal" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M5 8.2l2 2 4-4.4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="icon-warning" viewBox="0 0 16 16"><path d="M8 1.8L15 14H1z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M8 6.2v3.6M8 11.6v.2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+    <symbol id="icon-critical" viewBox="0 0 16 16"><path d="M5.2 1.5h5.6l3.7 3.7v5.6l-3.7 3.7H5.2l-3.7-3.7V5.2z" fill="currentColor"/><path d="M8 4.6v4.2M8 11.2v.2" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></symbol>
+    <symbol id="icon-fault" viewBox="0 0 16 16"><rect x="2" y="2" width="12" height="12" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M5.5 5.5l5 5M10.5 5.5l-5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+    <symbol id="icon-none" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-dasharray="2.5 2.5"/></symbol>
+  </svg>
+
+  <div class="status-strip" aria-hidden="true"></div>
+
+  <header class="topbar">
+    <div class="identity">
+      <h1>Rack 01</h1>
+      <p>Temperatura do gabinete, ao vivo</p>
+    </div>
+    <dl class="link">
+      <div>
+        <dt>Dispositivo</dt>
+        <dd id="device">esp32-rack01</dd>
+      </div>
+      <div>
+        <dt>Conexão</dt>
+        <dd><span class="dot" id="connection-dot"></span><span id="connection">Aguardando dados</span></dd>
+      </div>
+      <div>
+        <dt>Última leitura</dt>
+        <dd id="last-seen">nenhuma</dd>
+      </div>
+    </dl>
+  </header>
+
+  <main>
+    <section class="reading" aria-labelledby="reading-title">
+      <h2 id="reading-title" class="visually-hidden">Temperatura agora</h2>
+      <div class="reading-top">
+        <div class="reading-value">
+          <p class="temp"><span id="temp-value">--</span><span class="unit">°C</span></p>
+          <p class="state-badge">
+            <svg class="state-icon"><use id="state-icon" href="#icon-none"/></svg>
+            <span id="state-text">Sem leitura</span>
+          </p>
+        </div>
+        <dl class="facts">
+          <div><dt>Ventoinha</dt><dd id="fact-fan">-</dd></div>
+          <div><dt>Tampa</dt><dd id="fact-lid">-</dd></div>
+          <div><dt>Modo</dt><dd id="fact-mode">-</dd></div>
+          <div><dt>Umidade</dt><dd id="fact-humidity">-</dd></div>
+          <div><dt>Temperatura no DHT</dt><dd id="fact-dht">-</dd></div>
+        </dl>
+      </div>
+
+      <div class="ruler" aria-hidden="true">
+        <div class="zones">
+          <span class="zone zone-normal" id="zone-normal"></span>
+          <span class="zone zone-warning" id="zone-warning"></span>
+          <span class="zone zone-critical" id="zone-critical"></span>
+        </div>
+        <span class="needle" id="needle"></span>
+        <span class="tick" id="tick-warning"></span>
+        <span class="tick" id="tick-critical"></span>
+        <span class="scale scale-min" id="scale-min"></span>
+        <span class="scale scale-max" id="scale-max"></span>
+      </div>
+      <p class="state-note" id="state-note">Nenhuma leitura ainda. Ligue o ESP32 ou inicie a simulação no Wokwi.</p>
+    </section>
+
+    <section class="history" aria-labelledby="history-title">
+      <div class="section-head">
+        <h2 id="history-title">Histórico</h2>
+        <div class="range" role="group" aria-label="Período do gráfico">
+          <button type="button" data-minutes="15" aria-pressed="true">15 min</button>
+          <button type="button" data-minutes="60" aria-pressed="false">1 h</button>
+          <button type="button" data-minutes="360" aria-pressed="false">6 h</button>
+        </div>
+      </div>
+      <ul class="legend">
+        <li><span class="key key-temp"></span>Temperatura</li>
+        <li><span class="key key-warning"></span>Limite de atenção</li>
+        <li><span class="key key-critical"></span>Limite crítico</li>
+      </ul>
+      <div class="chart-box">
+        <canvas id="chart" role="img" aria-label="Gráfico da temperatura no período escolhido"></canvas>
+        <p class="chart-empty" id="chart-empty">Sem leituras neste período.</p>
+      </div>
+      <p class="trend" id="trend"></p>
+    </section>
+
+    <section class="controls" aria-labelledby="controls-title">
+      <h2 id="controls-title">Controle remoto</h2>
+
+      <div class="control">
+        <h3>Modo</h3>
+        <div class="segmented" role="group" aria-label="Modo">
+          <button type="button" id="mode-auto" aria-pressed="false">Automático</button>
+          <button type="button" id="mode-manual" aria-pressed="false">Manual</button>
+        </div>
+        <p class="hint">No automático, a ventoinha segue o estado.</p>
+      </div>
+
+      <div class="control">
+        <h3>Ventoinha</h3>
+        <div class="segmented" role="group" aria-label="Ventoinha">
+          <button type="button" id="fan-on">Ligar</button>
+          <button type="button" id="fan-off">Desligar</button>
+        </div>
+        <p class="hint" id="fan-hint">Disponível no modo manual.</p>
+      </div>
+
+      <form class="control" id="limits-form" novalidate>
+        <h3>Limites</h3>
+        <div class="limits">
+          <label>Atenção a partir de
+            <span class="field"><input type="number" id="limit-warning" min="20" max="50" step="1" required><span>°C</span></span>
+          </label>
+          <label>Crítico a partir de
+            <span class="field"><input type="number" id="limit-critical" min="20" max="50" step="1" required><span>°C</span></span>
+          </label>
+        </div>
+        <button type="submit" class="primary">Aplicar limites</button>
+        <p class="hint">Entre 20 e 50 °C, com o crítico pelo menos 3 °C acima do de atenção.</p>
+      </form>
+
+      <div class="control">
+        <h3>Alarme</h3>
+        <button type="button" id="silence">Silenciar alarme</button>
+        <p class="hint" id="silence-hint">O alarme só toca no estado crítico.</p>
+      </div>
+
+      <p class="feedback" id="feedback" role="status" aria-live="polite"></p>
+    </section>
+
+    <section class="events" aria-labelledby="events-title">
+      <h2 id="events-title">Eventos</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th scope="col">Horário</th><th scope="col">Evento</th><th scope="col">Detalhe</th></tr>
+          </thead>
+          <tbody id="events-body"></tbody>
+        </table>
+      </div>
+      <p class="events-empty" id="events-empty">Nenhum evento registrado.</p>
+    </section>
+  </main>
+
+  <footer>
+    <p>Atualiza a cada 2 segundos. As leituras chegam do ESP32 pelo broker MQTT e ficam guardadas no banco do servidor.</p>
+  </footer>
+
+  <script src="vendor/chart.umd.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
