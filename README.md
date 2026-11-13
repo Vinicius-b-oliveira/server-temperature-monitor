@@ -121,4 +121,6 @@ O script pede confirmação, move o banco atual para `server/data/backup/` com a
 
 - `docs/stage1_proposal.pdf`: Etapa 1, proposta e planejamento
 - `docs/stage2_technical_design.pdf`: Etapa 2, projeto técnico
+- `docs/stage3_hardware_firmware.pdf`: Etapa 3, hardware e firmware
+- `docs/stage4_iot_data_control.pdf`: Etapa 4, integração IoT, dados e controle remoto
 - `docs/diagrams/`: diagramas das etapas (SVG e PNG)
