@@ -5,7 +5,7 @@ from typing import Literal
 from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel
 
-from app import config, database, indicators, mqtt_client, validation
+from app import config, database, indicators, mqtt_client, telegram, validation
 
 RATE_MINUTES = 5
 FORECAST_MINUTES = 10
@@ -42,7 +42,7 @@ def get_latest() -> dict:
     fresh = reading is not None and _seconds_since(reading["received_at"]) < config.OFFLINE_AFTER_S
     # Sem nenhum status recebido ainda, vale só a idade da última leitura
     online = fresh and database.last_status(config.DB_PATH) != "offline"
-    return {"online": online, "reading": reading}
+    return {"online": online, "reading": reading, "telegram": telegram.enabled()}
 
 
 @router.get("/readings")

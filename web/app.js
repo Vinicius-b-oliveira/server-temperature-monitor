@@ -115,6 +115,8 @@ function renderLatest(data) {
   document.body.classList.toggle("is-offline", !data.online);
   $("connection-dot").classList.toggle("is-online", data.online);
   $("connection").textContent = data.online ? "Online" : reading ? "Offline" : "Aguardando dados";
+  $("telegram-icon").classList.toggle("is-on", data.telegram);
+  $("telegram").textContent = data.telegram ? "Telegram ligado" : "Telegram desligado";
 
   if (!reading) {
     document.body.dataset.state = "none";

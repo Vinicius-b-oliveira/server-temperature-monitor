@@ -160,6 +160,14 @@ footer {
 
 .dot.is-online { background: var(--normal); }
 
+.telegram-icon {
+  width: 16px;
+  height: 16px;
+  color: var(--offline);
+}
+
+.telegram-icon.is-on { color: #229ed9; }
+
 main {
   display: grid;
   grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr);

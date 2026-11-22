@@ -34,7 +34,13 @@ def fake_mqtt(monkeypatch):
 
 
 def test_latest_empty(client):
-    assert client.get("/api/latest").json() == {"online": False, "reading": None}
+    assert client.get("/api/latest").json() == {"online": False, "reading": None, "telegram": False}
+
+
+def test_latest_reports_telegram_on(client, db_path, monkeypatch):
+    monkeypatch.setattr(config, "TELEGRAM_TOKEN", "test-token")
+    monkeypatch.setattr(config, "TELEGRAM_CHAT_ID", "123")
+    assert client.get("/api/latest").json()["telegram"] is True
 
 
 def test_latest_online_with_fresh_reading(client, db_path):
