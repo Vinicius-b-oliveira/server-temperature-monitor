@@ -2,7 +2,7 @@
 #include "config.h"
 #include "state_machine.h"
 
-// Sem histerese: usado na partida e na saída da falha
+// Sem histerese: usado na partida, na saída da falha e quando o limite muda
 State stateFromTemp(float tempC, const Limits& limits) {
   if (tempC >= limits.critical) {
     return STATE_CRITICAL;
@@ -56,6 +56,13 @@ bool updateState(StateMachine& machine, float tempC, const Limits& limits) {
   }
   machine.state = nextState(machine.state, tempC, limits);
   return machine.state != previous;
+}
+
+// Limite novo vale na hora: a histerese do limite antigo não segura o estado
+void recalculateState(StateMachine& machine, float tempC, const Limits& limits) {
+  if (machine.started && machine.state != STATE_FAULT) {
+    machine.state = stateFromTemp(tempC, limits);
+  }
 }
 
 // A folga mínima mantém a histerese funcionando entre os dois limites
