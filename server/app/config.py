@@ -13,5 +13,9 @@ TOPIC_PREFIX = f"thermomon/{TEAM_CODE}/rack01/"
 DB_PATH = Path(os.getenv("DB_PATH", SERVER_DIR / "data" / "monitor.db"))
 OFFLINE_AFTER_S = int(os.getenv("OFFLINE_AFTER_S", "15"))
 
+# Alertas no Telegram. Sem os dois valores, ficam desligados
+TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN", "")
+TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID", "")
+
 # Limite crítico padrão do firmware, usado enquanto não chega nenhuma leitura
 CRITICAL_C = float(os.getenv("CRITICAL_C", "32"))

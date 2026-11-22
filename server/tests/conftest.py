@@ -2,7 +2,18 @@ import json
 
 import pytest
 
-from app import config, database
+from app import config, database, telegram
+
+
+# Nenhum teste manda mensagem de verdade, mesmo com o .env carregado
+@pytest.fixture(autouse=True)
+def telegram_messages(monkeypatch):
+    sent = []
+    monkeypatch.setattr(config, "TELEGRAM_TOKEN", "")
+    monkeypatch.setattr(config, "TELEGRAM_CHAT_ID", "")
+    monkeypatch.setattr(telegram, "_dispatch", sent.append)
+    monkeypatch.setattr(telegram, "_last_sent", {})
+    return sent
 
 
 @pytest.fixture

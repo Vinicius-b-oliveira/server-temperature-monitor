@@ -5,7 +5,7 @@ import uuid
 
 import paho.mqtt.client as mqtt
 
-from app import config, database, validation
+from app import config, database, telegram, validation
 
 log = logging.getLogger(__name__)
 
@@ -38,6 +38,7 @@ def _handle_telemetry(payload: bytes) -> None:
         database.insert_event(config.DB_PATH, reading["device"], "state_change", detail)
     if new_state == "fault" and old_state != "fault":
         database.insert_event(config.DB_PATH, reading["device"], "sensor_fault")
+    telegram.notify_state_change(old_state, reading)
 
 
 def _handle_status(payload: bytes) -> None:
