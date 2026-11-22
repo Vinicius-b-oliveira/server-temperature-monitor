@@ -1,8 +1,9 @@
-const REFRESH_MS = 2000;
+const REFRESH_MS = 1000;
 const CHART_REFRESH_MS = 10000;
 const SCALE_MIN_C = 15;
 const SCALE_MAX_C = 45;
 const HYSTERESIS_C = 2;
+const LIMITS_TIMEOUT_MS = 15000;
 
 const STATE_LABELS = {
   normal: "Normal",
@@ -16,6 +17,8 @@ const $ = (id) => document.getElementById(id);
 let chart = null;
 let chartMinutes = 15;
 let lastChartLoad = 0;
+let lastReadingAt = null;
+let pendingLimits = null;
 
 // Formatação
 
@@ -344,6 +347,7 @@ async function sendCommand(name, body, doneText) {
       body: body ? JSON.stringify(body) : undefined,
     });
     showFeedback(`${doneText} às ${new Date().toLocaleTimeString("pt-BR")}. O painel mostra a mudança quando o ESP32 responder.`);
+    refresh();
     return true;
   } catch (error) {
     if (error.status === 503) {
@@ -379,6 +383,20 @@ function renderControls(reading, online) {
     ? "Silencia o buzzer até o estado mudar. O LED continua vermelho."
     : "O alarme só toca no estado crítico.";
 
+  // Enquanto o ESP32 não confirma, os campos ficam com o valor enviado
+  if (pendingLimits) {
+    const { warning, critical, sentAt } = pendingLimits;
+    if (reading.warning_c === warning && reading.critical_c === critical) {
+      pendingLimits = null;
+      showFeedback(`O ESP32 confirmou os limites de ${warning} e ${critical} °C.`);
+    } else if (Date.now() - sentAt >= LIMITS_TIMEOUT_MS) {
+      pendingLimits = null;
+      showFeedback("O ESP32 não confirmou os limites. Os campos mostram os valores em vigor.", true);
+    } else {
+      return;
+    }
+  }
+
   // Mostra os limites em vigor no ESP32, menos enquanto alguém está digitando
   const editing = document.activeElement?.matches("#limits-form input");
   if (!editing) {
@@ -408,7 +426,10 @@ function setupControls() {
       showFeedback("Use números inteiros entre 20 e 50 °C, com o crítico pelo menos 3 °C acima do de atenção.", true);
       return;
     }
-    await sendCommand("limits", { warning, critical }, `Limites de ${warning} e ${critical} °C enviados`);
+    pendingLimits = { warning, critical, sentAt: Date.now() };
+    if (!(await sendCommand("limits", { warning, critical }, `Limites de ${warning} e ${critical} °C enviados`))) {
+      pendingLimits = null;
+    }
   });
 
   for (const button of document.querySelectorAll(".range button")) {
@@ -434,7 +455,9 @@ async function refresh() {
     renderLatest(latest);
     renderTrend(indicators);
     renderEvents(events);
-    if (Date.now() - lastChartLoad >= CHART_REFRESH_MS) {
+    const readingAt = latest.reading?.received_at ?? null;
+    if (readingAt !== lastReadingAt || Date.now() - lastChartLoad >= CHART_REFRESH_MS) {
+      lastReadingAt = readingAt;
       await loadChart();
     }
   } catch (error) {
@@ -444,7 +467,12 @@ async function refresh() {
   }
 }
 
+// setTimeout em vez de setInterval: uma consulta lenta não se sobrepõe à próxima
+async function refreshLoop() {
+  await refresh();
+  setTimeout(refreshLoop, REFRESH_MS);
+}
+
 createChart();
 setupControls();
-refresh();
-setInterval(refresh, REFRESH_MS);
+refreshLoop();
