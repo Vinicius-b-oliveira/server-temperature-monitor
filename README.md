@@ -31,7 +31,7 @@ O ESP32 lê os sensores, decide o estado e aciona as saídas sozinho. A rede só
 | crítico (`critical`) | a partir de 32 °C | vermelho | ligada | toca até ser silenciado |
 | falha (`fault`) | 3 leituras inválidas seguidas do sensor principal | vermelho piscando | ligada | desligado |
 
-A histerese é de 2 °C: de atenção o estado só volta para normal em 25 °C, e de crítico só volta para atenção em 30 °C. Os limites podem ser mudados pelo painel, entre 20 e 50 °C e com o crítico pelo menos 3 °C acima do de atenção. Ao reiniciar, o ESP32 volta aos padrões. O botão silencia o buzzer até o estado mudar. O LDR indica se a tampa está aberta.
+A histerese é de 2 °C: de atenção o estado só volta para normal em 25 °C, e de crítico só volta para atenção em 30 °C. Os limites podem ser mudados pelo painel, entre 20 e 50 °C e com o crítico pelo menos 3 °C acima do de atenção. O limite novo fica gravado no ESP32 e continua valendo depois de reiniciar. Quando ele muda, o estado é recalculado na hora. O botão silencia o buzzer até o estado mudar. O LDR indica se a tampa está aberta.
 
 Para gravar:
 
@@ -67,7 +67,7 @@ Broker público `broker.hivemq.com`, porta 1883. Todos os tópicos começam com 
 
 | Tópico | Direção | Conteúdo |
 |---|---|---|
-| `telemetry` | ESP32 para o servidor, a cada 5 s | JSON abaixo |
+| `telemetry` | ESP32 para o servidor, a cada 5 s e logo depois de uma mudança de estado ou de um comando | JSON abaixo |
 | `status` | ESP32 para o servidor | `online` ao conectar; `offline` publicado pelo broker (Last Will) quando a conexão cai |
 | `cmd/mode` | servidor para o ESP32 | `auto` ou `manual` |
 | `cmd/fan` | servidor para o ESP32 | `on` ou `off`. Só vale no modo manual e não desliga a ventoinha em crítico ou falha |
@@ -94,7 +94,33 @@ uvicorn app.main:app --host 127.0.0.1 --port 8000
 
 O painel fica em http://127.0.0.1:8000. Ele mostra a temperatura atual, as faixas e os limites em vigor, o histórico, a tendência, os eventos e os controles de modo, ventoinha, limites e alarme. As leituras ficam em `server/data/monitor.db`. A API está em `/api` (`/api/latest`, `/api/readings`, `/api/events`, `/api/indicators` e `/api/commands/...`).
 
-Configuração por variável de ambiente, todas opcionais: `MQTT_HOST`, `MQTT_PORT`, `TEAM_CODE`, `DEVICE_ID`, `DB_PATH` e `OFFLINE_AFTER_S` (segundos sem leitura até o painel mostrar offline, padrão 15).
+Configuração por variável de ambiente, todas opcionais: `MQTT_HOST`, `MQTT_PORT`, `TEAM_CODE`, `DEVICE_ID`, `DB_PATH`, `OFFLINE_AFTER_S` (segundos sem leitura até o painel mostrar offline, padrão 15), `TELEGRAM_TOKEN` e `TELEGRAM_CHAT_ID`.
+
+### Alertas no Telegram
+
+Quando o estado muda para atenção, crítico ou falha, o servidor manda uma mensagem por um bot do Telegram. Sem o token e o ID do chat, os alertas ficam desligados e o resto funciona normalmente.
+
+1. No Telegram, fale com o @BotFather, mande `/newbot` e copie o token que ele devolve.
+2. Abra a conversa com o bot novo e mande qualquer mensagem.
+3. Crie o arquivo `server/.env` (ele não vai para o git):
+
+   ```
+   TELEGRAM_TOKEN=token-do-botfather
+   TELEGRAM_CHAT_ID=
+   ```
+
+4. Descubra o ID do chat e preencha a segunda linha:
+
+   ```
+   cd server
+   set -a; . ./.env; set +a
+   curl -s "https://api.telegram.org/bot$TELEGRAM_TOKEN/getUpdates"
+   ```
+
+   O número fica em `"chat":{"id":...}`.
+5. Antes de subir o servidor, carregue o arquivo no mesmo terminal com `set -a; . ./.env; set +a`. O log mostra `Telegram alerts on`.
+
+A mesma mudança de estado só gera outra mensagem depois de 60 s, para uma mensagem forjada no broker público não lotar o chat.
 
 Testes:
 
